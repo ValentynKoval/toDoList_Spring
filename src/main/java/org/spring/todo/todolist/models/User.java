@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Document(collection = "users")
@@ -20,4 +19,7 @@ public class User {
 
     @DBRef
     private List<Role> roles;
+
+    @DBRef
+    private Token token;
 }
