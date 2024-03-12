@@ -1,5 +1,8 @@
 package org.spring.todo.todolist.controllers;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.spring.todo.todolist.dto.AuthDto;
 import org.spring.todo.todolist.dto.TokenResponseDto;
@@ -24,7 +27,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public ResponseEntity<?> userAuthorization(@RequestBody AuthDto authDto) {
+    public ResponseEntity<?> userAuthorization(HttpServletResponse response, @RequestBody AuthDto authDto) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authDto.getUsername(), authDto.getPassword()));
         } catch (BadCredentialsException e) {
@@ -32,6 +35,8 @@ public class AuthController {
         }
         UserDetails userDetails = userService.loadUserByUsername(authDto.getUsername());
         String token = jwtService.generateToken(userDetails);
-        return ResponseEntity.ok(new TokenResponseDto(token));
+        Cookie cookie = new Cookie("token", token);
+        response.addCookie(cookie);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }
