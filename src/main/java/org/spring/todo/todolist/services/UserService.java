@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.spring.todo.todolist.dto.RegistrationUserDto;
 import org.spring.todo.todolist.models.Token;
 import org.spring.todo.todolist.models.User;
-import org.spring.todo.todolist.repo.RoleRepository;
 import org.spring.todo.todolist.repo.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
