@@ -36,7 +36,7 @@ public class UserService implements UserDetailsService {
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
     }
 
-    public void createNewUser (User user) {
+    public void createNewUser (User user) { // также нужно сохранить токен(либо же создать метод авторизации пользователя и уже в него добавлять токен)
         user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
         userRepository.save(user);
     }
