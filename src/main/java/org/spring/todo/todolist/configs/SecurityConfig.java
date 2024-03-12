@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
     private final NewPasswordEncoder newPasswordEncoder;
 
-    private static final String[] WHITE_LIST = {"/"};
+    private static final String[] WHITE_LIST = {"/createNewRole", "/login", "/registration"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
