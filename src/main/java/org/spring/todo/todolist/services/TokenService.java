@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class TokenService {
     private final TokenRepository tokenRepository;
 
-    public void saveNewToken(String token) {
+    public Token saveNewToken(String token) {
         Token newToken = new Token();
         newToken.setToken(token);
-        tokenRepository.save(newToken);
+        return tokenRepository.save(newToken);
     }
 }
