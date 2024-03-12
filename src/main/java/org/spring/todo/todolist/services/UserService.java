@@ -1,6 +1,7 @@
 package org.spring.todo.todolist.services;
 
 import lombok.RequiredArgsConstructor;
+import org.spring.todo.todolist.dto.RegistrationUserDto;
 import org.spring.todo.todolist.models.Token;
 import org.spring.todo.todolist.models.User;
 import org.spring.todo.todolist.repo.RoleRepository;
@@ -9,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(String.format("Пользователь %s не найден", username)));
@@ -37,14 +40,23 @@ public class UserService implements UserDetailsService {
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
     }
 
-    public void createNewUser (User user) { // также нужно сохранить токен(либо же создать метод авторизации пользователя и уже в него добавлять токен)
-        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
-        userRepository.save(user);
-    }
+//    public void createNewUser (User user) { // также нужно сохранить токен(либо же создать метод авторизации пользователя и уже в него добавлять токен)
+//        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
+//        userRepository.save(user);
+//    }
 
     public void setToken(String username, Token token) {
         User user = findByUsername(username);
         user.setToken(token);
         userRepository.save(user);
+    }
+
+    public User createNewUser(RegistrationUserDto registrationUserDto) {
+        User user = new User();
+        user.setUsername(registrationUserDto.getUsername());
+        user.setEmail(registrationUserDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
+        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
+        return userRepository.save(user);
     }
 }
