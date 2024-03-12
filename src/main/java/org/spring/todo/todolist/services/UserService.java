@@ -25,14 +25,14 @@ public class UserService implements UserDetailsService {
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(String.format("Пользователь %s не найден", username)));
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
+        User user = findByUsername(username).orElseThrow();
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
@@ -45,7 +45,7 @@ public class UserService implements UserDetailsService {
 //    }
 
     public void setToken(String username, Token token) {
-        User user = findByUsername(username);
+        User user = findByUsername(username).orElseThrow();
         user.setToken(token);
         userRepository.save(user);
     }
