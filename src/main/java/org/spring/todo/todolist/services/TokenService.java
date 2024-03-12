@@ -16,4 +16,8 @@ public class TokenService {
         newToken.setToken(token);
         return tokenRepository.save(newToken);
     }
+
+    public void deleteByToken(String token) {
+        tokenRepository.delete(tokenRepository.findByToken(token).orElseThrow());
+    }
 }
