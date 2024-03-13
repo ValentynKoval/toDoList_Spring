@@ -24,6 +24,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -39,13 +40,11 @@ public class UserService implements UserDetailsService {
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList()));
     }
 
-//    public void createNewUser (User user) { // также нужно сохранить токен(либо же создать метод авторизации пользователя и уже в него добавлять токен)
-//        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
-//        userRepository.save(user);
-//    }
-
     public void setToken(String username, Token token) {
         User user = findByUsername(username).orElseThrow();
+        if (user.getToken() != null) {
+            tokenService.deleteByToken(user.getToken().getToken());
+        }
         user.setToken(token);
         userRepository.save(user);
     }
@@ -57,5 +56,10 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setRoles(List.of(roleService.getUserRole()));
         return userRepository.save(user);
+    }
+
+    public String findTokenByUsername(String username) {
+        User user = findByUsername(username).orElseThrow();
+        return user.getToken().getToken();
     }
 }

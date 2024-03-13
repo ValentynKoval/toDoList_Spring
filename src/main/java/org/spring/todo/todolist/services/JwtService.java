@@ -37,8 +37,8 @@ public class JwtService {
         claims.put("roles", rolesList);
 
         Date issuedDate = new Date();
-        Date expiredEccessTokenDate = new Date(issuedDate.getTime() + accessTokenLifetime.toMillis());
-        Date expiredRefreshTokenDate = new Date(issuedDate.getTime() + refreshTokenLifetime.toMillis());
+        Date expiredEccessTokenDate = getExpiredEccessToken(issuedDate);
+        Date expiredRefreshTokenDate = getExpiredRefreshToken(issuedDate);
 
         String username = userDetails.getUsername();
 
@@ -46,6 +46,14 @@ public class JwtService {
         userService.setToken(username, refreshtoken);
 
         return tokenBuilder(claims, username, issuedDate, expiredEccessTokenDate);
+    }
+
+    public Date getExpiredEccessToken(Date issuedDate) {
+        return new Date(issuedDate.getTime() + accessTokenLifetime.toMillis());
+    }
+
+    public Date getExpiredRefreshToken(Date issuedDate) {
+        return new Date(issuedDate.getTime() + refreshTokenLifetime.toMillis());
     }
 
     public String tokenBuilder(Map<String, Object> claims, String username, Date issuedDate, Date expiredDate) {
@@ -71,5 +79,19 @@ public class JwtService {
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String refreshTokensByClaims(List<String> rolesList, String username) {
+        Date issuedDate = new Date();
+        Date expiredEccessTokenDate = getExpiredEccessToken(issuedDate);
+        Date expiredRefreshTokenDate = getExpiredRefreshToken(issuedDate);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", rolesList);
+
+        Token refreshtoken = tokenService.saveNewToken(tokenBuilder(claims, username, issuedDate, expiredRefreshTokenDate));
+        userService.setToken(username, refreshtoken);
+
+        return tokenBuilder(claims, username, issuedDate, expiredEccessTokenDate);
     }
 }
