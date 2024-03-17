@@ -5,8 +5,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskDto {
+public class TaskResponseDto {
+    private String id;
     private String name;
     private String description;
+    private LocalDateTime createTime;
     private LocalDateTime executionTime;
 }
