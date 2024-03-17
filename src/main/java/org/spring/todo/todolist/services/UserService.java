@@ -2,6 +2,7 @@ package org.spring.todo.todolist.services;
 
 import lombok.RequiredArgsConstructor;
 import org.spring.todo.todolist.dto.RegistrationUserDto;
+import org.spring.todo.todolist.models.Task;
 import org.spring.todo.todolist.models.Token;
 import org.spring.todo.todolist.models.User;
 import org.spring.todo.todolist.repo.UserRepository;
@@ -67,5 +68,16 @@ public class UserService implements UserDetailsService {
         User user = findByUsername(username).orElseThrow();
         user.setToken(null);
         userRepository.save(user);
+    }
+
+    public void addTask(String username, Task task) {
+        User user = findByUsername(username).orElseThrow();
+        user.getTasks().add(task);
+        userRepository.save(user);
+    }
+
+    public void deleteTask(Task task, String username) {
+        User user = findByUsername(username).orElseThrow();
+        user.getTasks().remove(task);
     }
 }
