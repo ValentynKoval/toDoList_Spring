@@ -22,4 +22,7 @@ public class User {
 
     @DBRef
     private Token token;
+
+    @DBRef
+    private List<Task> tasks;
 }
