@@ -34,7 +34,7 @@ public class AuthController {
         return authService.refreshTokens(response, usernameDto.getUsername());
     }
 
-    @RequestMapping("/logout")
+    @PatchMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(name = "token") String accessToken, HttpServletResponse response) {
         if (accessToken != null) {
             Cookie cookie = new Cookie("token", "");
