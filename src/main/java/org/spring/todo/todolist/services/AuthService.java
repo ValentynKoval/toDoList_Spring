@@ -23,6 +23,7 @@ public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
     public ResponseEntity<?> createAuthTokens(HttpServletResponse response, AuthDto authDto) {
         try {
@@ -61,6 +62,12 @@ public class AuthService {
         List<String> roles = jwtService.getRoles(refreshToken);
         String newEccessToken = jwtService.refreshTokensByClaims(roles, username);
         setTokenToCookie(response, newEccessToken);
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> deleteUserToken(String username) {
+        tokenService.deleteByToken(userService.findTokenByUsername(username));
+        userService.deleteUserToken(username);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }

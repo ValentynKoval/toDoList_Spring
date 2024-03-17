@@ -62,4 +62,10 @@ public class UserService implements UserDetailsService {
         User user = findByUsername(username).orElseThrow();
         return user.getToken().getToken();
     }
+
+    public void deleteUserToken(String username) {
+        User user = findByUsername(username).orElseThrow();
+        user.setToken(null);
+        userRepository.save(user);
+    }
 }
