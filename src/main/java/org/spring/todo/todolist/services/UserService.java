@@ -76,8 +76,10 @@ public class UserService implements UserDetailsService {
         if (user.getTasks() == null) {
             user.setTasks(new ArrayList<>());
         }
-        user.getTasks().add(task);
-        userRepository.save(user);
+        if (!user.getTasks().contains(task)) {
+            user.getTasks().add(task);
+            userRepository.save(user);
+        }
     }
 
     public void deleteTask(Task task, String username) {

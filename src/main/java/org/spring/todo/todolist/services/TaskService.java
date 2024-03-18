@@ -31,7 +31,11 @@ public class TaskService {
     }
 
     public TaskResponseDto getTask(String taskId, String username) {
-        return taskResponseMapper.toDto(findTaskByIdAndUsername(username, taskId));
+        Task task = findTaskByIdAndUsername(username, taskId);
+        if (task == null) {
+            return null;
+        }
+        return taskResponseMapper.toDto(task);
     }
 
     public List<TaskResponseDto> getTasksByUsername(String username) {
@@ -42,16 +46,17 @@ public class TaskService {
         return tasks.stream().map(taskResponseMapper::toDto).collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> updateTask(String username, TaskResponseDto taskResponseDto) {
-        if (findTaskByIdAndUsername(username, taskResponseDto.getId()) == null) {
-            return ResponseEntity.badRequest().body("The user does not have such a task");
+    public String updateTask(String username, TaskRequestDto taskRequestDto, String taskId) {
+        if (findTaskByIdAndUsername(username, taskId) == null) {
+            return "The user does not have such a task";
         }
-        Task task = taskResponseMapper.toEntity(taskResponseDto);
+        Task task = taskRequestMapper.toEntity(taskRequestDto);
+        task.setId(taskId);
         taskRepository.save(task);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return "success";
     }
 
-    private void deleteTask(String username, String taskId) {
+    public void deleteTask(String username, String taskId) {
         Task task = findTaskByIdAndUsername(username, taskId);
         if (task != null) {
             taskRepository.delete(task);
@@ -59,12 +64,27 @@ public class TaskService {
         }
     }
 
-    private Task findTaskByIdAndUsername(String username, String taskId) {
+    public Task findTaskByIdAndUsername(String username, String taskId) {
         List<Task> tasks = userService.findByUsername(username).orElseThrow().getTasks();
-        Optional<Task> task = tasks.stream().filter(t -> t.getId() == taskId).findAny();
+        Optional<Task> task = tasks.stream().filter(t -> t.getId().equals(taskId)).findAny();
         if (!task.isPresent()) {
             return null;
         }
         return task.orElseThrow();
+    }
+
+    public boolean addTaskById(String username, String taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
+        if (!task.getIsShare()) {
+            return false;
+        }
+        userService.addTask(username, task);
+        return true;
+    }
+
+    public void changeIsShare(String taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
+        task.setIsShare(true);
+        taskRepository.save(task);
     }
 }
