@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,6 +73,9 @@ public class UserService implements UserDetailsService {
 
     public void addTask(String username, Task task) {
         User user = findByUsername(username).orElseThrow();
+        if (user.getTasks() == null) {
+            user.setTasks(new ArrayList<>());
+        }
         user.getTasks().add(task);
         userRepository.save(user);
     }
@@ -79,5 +83,6 @@ public class UserService implements UserDetailsService {
     public void deleteTask(Task task, String username) {
         User user = findByUsername(username).orElseThrow();
         user.getTasks().remove(task);
+        userRepository.save(user);
     }
 }
