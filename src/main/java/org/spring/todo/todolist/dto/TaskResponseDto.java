@@ -9,6 +9,6 @@ public class TaskResponseDto {
     private String id;
     private String name;
     private String description;
-    private LocalDateTime createTime;
-    private LocalDateTime executionTime;
+    private String createTime;
+    private String executionTime;
 }

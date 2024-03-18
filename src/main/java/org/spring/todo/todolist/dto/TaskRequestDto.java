@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 public class TaskRequestDto {
     private String name;
     private String description;
-    private LocalDateTime executionTime;
+    private String executionTime;
 }

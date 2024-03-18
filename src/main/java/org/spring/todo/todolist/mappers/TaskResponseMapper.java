@@ -4,16 +4,21 @@ import org.spring.todo.todolist.dto.TaskResponseDto;
 import org.spring.todo.todolist.models.Task;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class TaskResponseMapper implements EntityMapper<Task, TaskResponseDto> {
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Override
     public Task toEntity(TaskResponseDto dto) {
         Task task = new Task();
         task.setId(dto.getId());
         task.setName(dto.getName());
         task.setDescription(dto.getDescription());
-        task.setCreateTime(dto.getCreateTime());
-        task.setExecutionTime(dto.getExecutionTime());
+        task.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), formatter));
+        task.setExecutionTime(LocalDateTime.parse(dto.getExecutionTime(), formatter));
         task.setIsShare(false);
         return task;
     }
@@ -24,8 +29,8 @@ public class TaskResponseMapper implements EntityMapper<Task, TaskResponseDto> {
         taskResponseDto.setId(toEntity.getId());
         taskResponseDto.setName(toEntity.getName());
         taskResponseDto.setDescription(toEntity.getDescription());
-        taskResponseDto.setCreateTime(toEntity.getCreateTime());
-        taskResponseDto.setExecutionTime(toEntity.getExecutionTime());
+        taskResponseDto.setCreateTime(toEntity.getCreateTime().format(formatter));
+        taskResponseDto.setExecutionTime(toEntity.getExecutionTime().format(formatter));
         return taskResponseDto;
     }
 }
